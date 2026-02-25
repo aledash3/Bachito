@@ -42,26 +42,43 @@ function MapaPage({ darkMode, userPos, heading, gpsError }) {
     const [distanciaRestante, setDistanciaRestante] = useState(0);
 
     // 1. OBTENER DATOS Y MODO EXPLORADOR
+    // 1. OBTENER DATOS Y ASIGNAR GPS (VERSIÓN TESIS)
     const obtenerDatos = async () => {
         try {
-            const res = await axios.get(`https://bachito.duckdns.org/api/sensores`);
+            // 👇 Usamos EXACTAMENTE la misma ruta que el ESP32 (http y puerto 4000)
+            const urlBackend = "https://bachito.duckdns.org/api/sensores";
+            
+            const res = await axios.get(urlBackend);
             const datos = res.data.reverse(); 
             setBaches(datos);
             
             const ultimoBache = datos[0]; 
-            const rolUsuario = localStorage.getItem('userRole') || 'usuario';
 
-            // ASIGNACIÓN DE GPS AUTOMÁTICA
-            if (rolUsuario === 'explorador' && ultimoBache && ultimoBache.bache && (ultimoBache.lat === 0 || !ultimoBache.lat)) {
+            // 👇 LÓGICA INFALIBLE: Si hay un bache nuevo y tiene latitud 0
+            if (ultimoBache && ultimoBache.bache && (ultimoBache.lat === 0 || !ultimoBache.lat)) {
                 try {
-                    await axios.patch(`https://bachito.duckdns.org/api/sensores/${ultimoBache._id}`, {
-                        lat: userPos[0], lng: userPos[1]
+                    console.log("📍 Detectado bache sin GPS. Enviando coordenadas...", userPos);
+                    
+                    // El celular hace el parche (PATCH) enviando su propio GPS
+                    await axios.patch(`${urlBackend}/${ultimoBache._id}`, {
+                        lat: userPos[0], 
+                        lng: userPos[1]
                     });
-                    console.log("📍 GPS asignado al bache");
-                } catch (err) { console.error("Error actualizando GPS:", err); }
+                    
+                    console.log("✅ ¡GPS ASIGNADO AL BACHE CON ÉXITO!");
+                    
+                    // Volvemos a descargar los datos para que el bache salte a tu ubicación en el mapa al instante
+                    const resActualizada = await axios.get(urlBackend);
+                    setBaches(resActualizada.data.reverse());
+
+                } catch (err) { 
+                    console.error("❌ Error actualizando GPS:", err); 
+                }
             }
-        } catch (err) { console.error("Error obteniendo baches:", err); }
-    };
+        } catch (err) { 
+            console.error("Error obteniendo baches:", err); 
+        }
+    };       
 
     useEffect(() => {
         obtenerDatos();
