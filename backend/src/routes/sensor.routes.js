@@ -1,40 +1,17 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const sensorController = require('../controllers/sensor.controller');
-// 👇 IMPORTANTE: Necesitas importar el modelo aquí también para las rutas manuales
-const SensorData = require('../models/SensorData'); 
 
-// 1. RUTA POST (Para el ESP32) -> URL: .../api/sensores
+// 1. Ingesta desde el ESP32
 router.post('/', sensorController.receiveData);
 
-// 2. RUTA GET (Para el Mapa y Admin)
+// 2. Consulta de baches para Mapa y Panel Admin
 router.get('/', sensorController.getAllData);
 
-// 3. RUTA PATCH INTELIGENTE (Sirve para GPS y para Reparar al mismo tiempo)
-router.patch('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updates = req.body; 
-        
-        // Esto permite actualizar { lat, lng } O { estado: 'reparado' } sin conflictos
-        const result = await SensorData.findByIdAndUpdate(id, updates, { new: true });
-        
-        res.json(result);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error actualizando" });
-    }
-});
+// 3. Actualización de coordenadas o estado
+router.patch('/:id', sensorController.updateBache);
 
-// 4. RUTA DELETE (Para eliminar bache)
-router.delete('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        await SensorData.findByIdAndDelete(id);
-        res.json({ message: "Bache eliminado correctamente" });
-    } catch (error) {
-        res.status(500).json({ message: "Error eliminando" });
-    }
-});
+// 4. Eliminación de registro
+router.delete('/:id', sensorController.deleteBache);
 
 module.exports = router;

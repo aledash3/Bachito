@@ -1,21 +1,27 @@
-console.log('📦 app.js se está ejecutando');
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 require('dotenv').config();
 
 const app = express();
+
+// Conexión a la base de datos
 connectDB();
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// CAMBIO AQUÍ: Importamos antes de usar
+// Rutas de la API
+const authRoutes = require('./routes/auth');
 const sensorRoutes = require('./routes/sensor.routes');
 
-// Este log nos dirá la verdad:
-console.log('¿sensorRoutes es una función?:', typeof sensorRoutes === 'function');
-
+app.use('/api/auth', authRoutes);
 app.use('/api/sensores', sensorRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Bachito API en funcionamiento' });
+});
 
 module.exports = app;

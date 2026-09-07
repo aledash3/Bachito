@@ -1,105 +1,95 @@
-// UBICACIÓN: backend/routes/auth.js
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const dns = require('dns'); // Importamos DNS al inicio
 
-const JWT_SECRET = 'mi_secreto_super_seguro_tesis_123';
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_fallback_key';
 
-// --- 1. REGISTRARSE (Con validación DNS y DB) ---
+const isValidEmail = (email) => {
+  return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+};
+
+// 1. REGISTRO DE USUARIO
 router.post('/register', async (req, res) => {
-    try {
-        const { nombre, email, password } = req.body;
-        const dominio = email.split('@')[1];
+  try {
+    const { nombre, email, password, role } = req.body;
 
-        // A. Validar existencia real del dominio en Internet
-        dns.resolveMx(dominio, async (err, addresses) => {
-            if (err || !addresses || addresses.length === 0) {
-                return res.status(400).json({ msg: `El dominio @${dominio} no es un servidor de correo real.` });
-            }
-
-            try {
-                // B. Verificar si el usuario ya existe en MongoDB
-                const userExists = await User.findOne({ email });
-                if (userExists) return res.status(400).json({ msg: 'Este correo ya está registrado.' });
-
-                // C. Encriptar contraseña
-                const salt = await bcrypt.genSalt(10);
-                const hashedPassword = await bcrypt.hash(password, salt);
-
-                // D. Guardar nuevo usuario
-                const newUser = new User({ nombre, email, password: hashedPassword });
-                await newUser.save();
-
-                res.json({ msg: 'Usuario registrado con éxito' });
-            } catch (dbErr) {
-                res.status(500).json({ error: "Error en base de datos: " + dbErr.message });
-            }
-        });
-    } catch (err) {
-        res.status(500).json({ error: "Error de servidor: " + err.message });
+    if (!nombre || !email || !password) {
+      return res.status(400).json({ msg: 'Todos los campos son obligatorios' });
     }
-});
 
-// --- 2. INICIAR SESIÓN (LOGIN) ---
-router.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-
-        // Buscar usuario
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ msg: 'Usuario no encontrado' });
-
-        // Comparar contraseñas
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ msg: 'Contraseña incorrecta' });
-
-        // Generar Token
-        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1d' });
-
-        res.json({ 
-            token, 
-            user: { 
-                id: user._id, 
-                nombre: user.nombre, 
-                email: user.email,
-                role: user.role // <--- ¡IMPORTANTE! Enviamos el rol
-            } 
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    const cleanEmail = email.trim().toLowerCase();
+    if (!isValidEmail(cleanEmail)) {
+      return res.status(400).json({ msg: 'Formato de correo electrónico no válido' });
     }
-});
-// backend/routes/auth.js
-router.post('/register', async (req, res) => {
-    const { nombre, email, password } = req.body;
-    const dominio = email.split('@')[1];
 
-    // Verificar si el dominio tiene registros MX (Mail Exchange)
-    dns.resolveMx(dominio, async (err, addresses) => {
-        if (err || !addresses || addresses.length === 0) {
-            // Si el dominio no existe o no es un servidor de correo real
-            return res.status(400).json({ msg: "El dominio @" + dominio + " no existe." });
-        }
+    // Verificar si el usuario ya existe en MongoDB
+    const userExists = await User.findOne({ email: cleanEmail });
+    if (userExists) {
+      return res.status(400).json({ msg: 'Este correo ya está registrado' });
+    }
 
-        // Si el dominio es real, entonces seguimos con el guardado en MongoDB
-        try {
-            const userExists = await User.findOne({ email });
-            if (userExists) return res.status(400).json({ msg: 'El correo ya existe' });
+    // Encriptar contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-
-            const newUser = new User({ nombre, email, password: hashedPassword });
-            await newUser.save();
-
-            res.json({ msg: 'Usuario registrado con éxito' });
-        
-        } catch (dbErr) {
-            res.status(500).json({ error: dbErr.message });
-        }
+    // Guardar nuevo usuario
+    const newUser = new User({
+      nombre: nombre.trim(),
+      email: cleanEmail,
+      password: hashedPassword,
+      role: role === 'admin' ? 'admin' : 'user'
     });
+    await newUser.save();
+
+    return res.status(201).json({ msg: 'Usuario registrado con éxito' });
+  } catch (err) {
+    console.error('Error en registro:', err);
+    return res.status(500).json({ error: 'Error interno del servidor al registrar usuario' });
+  }
 });
+
+// 2. INICIO DE SESIÓN (LOGIN)
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ msg: 'Correo y contraseña son requeridos' });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: cleanEmail });
+    if (!user) {
+      return res.status(400).json({ msg: 'Usuario no encontrado' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: 'Contraseña incorrecta' });
+    }
+
+    // Generar Token JWT con rol incluido
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    return res.json({
+      token,
+      user: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error('Error en login:', err);
+    return res.status(500).json({ error: 'Error interno del servidor al iniciar sesión' });
+  }
+});
+
 module.exports = router;

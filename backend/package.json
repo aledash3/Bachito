@@ -1,12 +1,13 @@
-{
-  "name": "bachito",
+﻿{
+  "name": "bachito-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend API para el sistema de deteccion de baches Bachito",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
-  "keywords": [],
+  "keywords": ["iot", "esp32", "baches", "express", "mongodb"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
