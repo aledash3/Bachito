@@ -16,7 +16,7 @@
 
 ## 📌 Descripción General
 
-**Bachito** es un ecosistema tecnológico Full-Stack y de Internet de las Cosas (IoT) diseñado para mitigar problemas de movilidad urbana y deterioro de infraestructura vial mediante la auditoría automatizada en tiempo real, desarrollado en la **Universidad Politécnica Salesiana** (*Distinción en Casa Abierta 2026*).
+**Bachito** es un ecosistema tecnológico Full-Stack y de Internet de las Cosas (IoT) diseñado para mitigar problemas de movilidad urbana y deterioro de infraestructura vial mediante la auditoría automatizada en tiempo real, desarrollado en la **Universidad Politécnica Salesiana** (*Distinción en Casa Abierta 2025 de la UPS*).
 
 El sistema integra sensores de hardware montados en vehículos para registrar anomalías de profundidad en el asfalto (baches) y enviar telemetría instantánea vía Wi-Fi/HTTP hacia una nube centralizada. La plataforma web React procesa las coordenadas GPS, proyecta mapas de calor de densidad vial y calcula distancias de proximidad (fórmula de Haversine) para alertar al conductor sobre riesgos viales inminentes.
 
