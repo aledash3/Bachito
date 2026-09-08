@@ -14,6 +14,18 @@
 
 ---
 
+## Contribución de David Cruz / My contribution
+
+Proyecto colaborativo de David Alejandro Cruz Palacios, Emily Mabel Ortega Constante y Carlos José Pilatuña Roldan. Mi aporte se centró en el prototipado del circuito electrónico y el firmware C++ del ESP32 para enviar telemetría a la plataforma web. Este fork conserva los créditos del equipo original.
+
+This is a collaborative project by David Alejandro Cruz Palacios, Emily Mabel Ortega Constante and Carlos José Pilatuña Roldan. My contribution focused on circuit prototyping and ESP32 C++ firmware sending telemetry to the web platform. This fork preserves the original team credits.
+
+### Alcance del prototipo / Prototype scope
+
+Prototipo académico presentado en la Casa Abierta UPS 2026. No se ha demostrado aquí validación vial en producción ni una medición del ahorro de ancho de banda. Las afirmaciones de rendimiento deben acompañarse de resultados medidos.
+
+Academic prototype presented at UPS Open House 2026. Production road validation and bandwidth savings are not demonstrated here; performance claims require measured results.
+
 ## 📌 Descripción General
 
 **Bachito** es un ecosistema tecnológico Full-Stack y de Internet de las Cosas (IoT) diseñado para mitigar problemas de movilidad urbana y deterioro de infraestructura vial mediante la auditoría automatizada en tiempo real, desarrollado en la **Universidad Politécnica Salesiana** (*Distinción en Casa Abierta 2026 de la UPS*).
@@ -152,7 +164,7 @@ npm start
 ## 🔬 Conclusiones Principales
 
 1. **Desacoplamiento Efectivo**: La división en tres capas (Firmware, API y SPA) permitió total independencia tecnológica entre la sensorización embebida y el panel de visualización.
-2. **Eficiencia en el Borde**: La lógica orientada a eventos en el firmware C++ redujo drásticamente el consumo de ancho de banda celular y la saturación del servidor.
+2. **Eficiencia en el Borde**: La lógica orientada a eventos en el firmware C++ incorpora un intervalo entre eventos para limitar la frecuencia de envío; su efecto sobre el tráfico requiere medición.
 3. **Procesamiento Distribuido**: Delegar los cálculos de proximidad (Haversine) y el renderizado geoespacial al cliente React optimizó los recursos de cómputo del backend.
 
 ---
@@ -165,9 +177,9 @@ Este proyecto fue desarrollado de forma colaborativa por:
 * **Emily Mabel Ortega Constante** — [@BOOTEABLE](https://github.com/BOOTEABLE)
 * **Carlos José Pilatuña Roldan** — [@Katsuro03](https://github.com/Katsuro03)
 
-Carrera de Ingeniería en Ciencias de la Computación  
-Asignaturas: **Programación y Plataformas Web** & **Sistemas Embebidos** (5to Semestre)  
-**Universidad Politécnica Salesiana (UPS)**  
+Carrera de Ingeniería en Ciencias de la Computación
+Asignaturas: **Programación y Plataformas Web** & **Sistemas Embebidos** (5to Semestre)
+**Universidad Politécnica Salesiana (UPS)**
 Quito, Ecuador
 
 ---
