@@ -1,4 +1,4 @@
-# 🚗 Bachito: Sistema IoT de Detección de Baches en Tiempo Real con Dashboard Geoespacial
+2# 🚗 Bachito: Sistema IoT de Detección de Baches en Tiempo Real con Dashboard Geoespacial
 
 **Ecosistema tecnológico de extremo a extremo para la auditoría vial inteligente: adquisición de datos con ESP32, backend seguro en Node.js y visualización geoespacial reactiva en React con Leaflet.**
 
@@ -178,8 +178,11 @@ Este proyecto fue desarrollado de forma colaborativa por:
 * **Carlos José Pilatuña Roldan** — [@Katsuro03](https://github.com/Katsuro03)
 
 Carrera de Ingeniería en Ciencias de la Computación
+
 Asignaturas: **Programación y Plataformas Web** & **Sistemas Embebidos** (5to Semestre)
+
 **Universidad Politécnica Salesiana (UPS)**
+
 Quito, Ecuador
 
 ---
