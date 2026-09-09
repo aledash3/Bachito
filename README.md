@@ -177,9 +177,9 @@ Este proyecto fue desarrollado de forma colaborativa por:
 * **Emily Mabel Ortega Constante** — [@BOOTEABLE](https://github.com/BOOTEABLE)
 * **Carlos José Pilatuña Roldan** — [@Katsuro03](https://github.com/Katsuro03)
 
-Carrera de Ingeniería en Ciencias de la Computación
-Asignaturas: **Programación y Plataformas Web** & **Sistemas Embebidos** (5to Semestre)
-**Universidad Politécnica Salesiana (UPS)**
+Carrera de Ingeniería en Ciencias de la Computación 
+Asignaturas: **Programación y Plataformas Web** & **Sistemas Embebidos** (5to Semestre) 
+**Universidad Politécnica Salesiana (UPS)** 
 Quito, Ecuador
 
 ---
