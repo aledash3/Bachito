@@ -1,191 +1,227 @@
-2# 🚗 Bachito: Sistema IoT de Detección de Baches en Tiempo Real con Dashboard Geoespacial
+# Bachito
 
-**Ecosistema tecnológico de extremo a extremo para la auditoría vial inteligente: adquisición de datos con ESP32, backend seguro en Node.js y visualización geoespacial reactiva en React con Leaflet.**
+Prototipo IoT para detectar irregularidades en la vía, registrar telemetría y visualizar eventos georreferenciados en una aplicación web.
 
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express.js](https://img.shields.io/badge/Express.js-5.x-404D59?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas%20%2F%20Mongoose-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![React](https://img.shields.io/badge/React-18.x-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
-[![Leaflet](https://img.shields.io/badge/Leaflet-Geoespacial-199900?style=for-the-badge&logo=Leaflet&logoColor=white)](https://leafletjs.com/)
-[![C++](https://img.shields.io/badge/C++-ESP32%20Firmware-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
-[![ESP32](https://img.shields.io/badge/ESP32-Espressif-000000?style=for-the-badge&logo=espressif&logoColor=white)](https://www.espressif.com/)
-![Licencia](https://img.shields.io/badge/Licencia-Acad%C3%A9mica%20y%20Educativa-blue?style=for-the-badge)
+[![ESP32](https://img.shields.io/badge/ESP32-Espressif-000000?style=flat-square&logo=espressif)](https://www.espressif.com/)
+[![C++](https://img.shields.io/badge/C%2B%2B-Firmware-00599C?style=flat-square&logo=c%2B%2B)](https://isocpp.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-43853D?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-4EA94B?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![React](https://img.shields.io/badge/React-19-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://react.dev/)
 
----
+## Descripción
 
-## Contribución de David Cruz / My contribution
+Bachito integra un dispositivo basado en ESP32, una API REST y una aplicación web geoespacial. El firmware toma lecturas con sensores HC-SR04 y PIR, clasifica eventos mediante un umbral configurable y envía la telemetría al servidor por HTTP. La plataforma web consulta los registros, los representa sobre mapas de Leaflet y calcula la proximidad entre el usuario y los eventos mediante la fórmula de Haversine.
 
-Proyecto colaborativo de David Alejandro Cruz Palacios, Emily Mabel Ortega Constante y Carlos José Pilatuña Roldan. Mi aporte se centró en el prototipado del circuito electrónico y el firmware C++ del ESP32 para enviar telemetría a la plataforma web. Este fork conserva los créditos del equipo original.
+El panel administrativo permite consultar estadísticas, visualizar un mapa de calor, actualizar el estado de los registros y exportar la información en formato CSV.
 
-This is a collaborative project by David Alejandro Cruz Palacios, Emily Mabel Ortega Constante and Carlos José Pilatuña Roldan. My contribution focused on circuit prototyping and ESP32 C++ firmware sending telemetry to the web platform. This fork preserves the original team credits.
+El prototipo fue desarrollado en la Universidad Politécnica Salesiana y recibió una distinción en la Casa Abierta UPS 2026.
 
-### Alcance del prototipo / Prototype scope
+## Estado y alcance
 
-Prototipo académico presentado en la Casa Abierta UPS 2026. No se ha demostrado aquí validación vial en producción ni una medición del ahorro de ancho de banda. Las afirmaciones de rendimiento deben acompañarse de resultados medidos.
+Este repositorio contiene un prototipo académico funcional. Su alcance actual incluye:
 
-Academic prototype presented at UPS Open House 2026. Production road validation and bandwidth savings are not demonstrated here; performance claims require measured results.
+- Detección experimental de irregularidades mediante un umbral de distancia.
+- Envío de telemetría desde el ESP32 hacia una API REST.
+- Persistencia de registros en MongoDB.
+- Geolocalización desde el navegador del usuario.
+- Actualización periódica del mapa cada cuatro segundos.
+- Alertas de proximidad para eventos ubicados a menos de 30 metros.
+- Panel administrativo con estadísticas, mapa de calor y exportación CSV.
+- Registro e inicio de sesión con contraseñas cifradas mediante `bcryptjs` y emisión de tokens JWT.
 
-## 📌 Descripción General
+No se ha realizado una validación vial en producción ni se dispone de mediciones concluyentes sobre precisión, ahorro de ancho de banda o rendimiento a escala. El umbral de detección y la ubicación de los sensores deben calibrarse para cada montaje físico.
 
-**Bachito** es un ecosistema tecnológico Full-Stack y de Internet de las Cosas (IoT) diseñado para mitigar problemas de movilidad urbana y deterioro de infraestructura vial mediante la auditoría automatizada en tiempo real, desarrollado en la **Universidad Politécnica Salesiana** (*Distinción en Casa Abierta 2026 de la UPS*).
-
-El sistema integra sensores de hardware montados en vehículos para registrar anomalías de profundidad en el asfalto (baches) y enviar telemetría instantánea vía Wi-Fi/HTTP hacia una nube centralizada. La plataforma web React procesa las coordenadas GPS, proyecta mapas de calor de densidad vial y calcula distancias de proximidad (fórmula de Haversine) para alertar al conductor sobre riesgos viales inminentes.
-
----
-
-## 🏛️ Arquitectura del Sistema
+## Arquitectura
 
 ```text
-┌─────────────────────────────────────────────────────────────────┐
-│                 Capa 1: Edge Computing (Hardware)               │
-│  - Microcontrolador ESP32 (Firmware C++)                        │
-│  - Sensor Ultrasónico HC-SR04 + Sensor de Movimiento PIR        │
-│  - Filtrado por umbral (>50 cm) y cooldown anti-saturación (5s) │
-└────────────────────────────────┬────────────────────────────────┘
-                                 │
-                                 ▼ HTTP POST (JSON Payload / WiFi)
-┌─────────────────────────────────────────────────────────────────┐
-│                 Capa 2: Backend API RESTful                     │
-│  - Servidor Node.js con Express.js (Arquitectura MVC)           │
-│  - Autenticación y Autorización basada en JWT + bcryptjs        │
-│  - Validación y saneamiento estricto de telemetría              │
-│  - Persistencia documental en MongoDB (Mongoose)                │
-└────────────────────────────────┬────────────────────────────────┘
-                                 │
-                                 ▼ REST API (Endpoints Seguros)
-┌─────────────────────────────────────────────────────────────────┐
-│                 Capa 3: Dashboard Web Reactivo                  │
-│  - SPA React 18 con React-Leaflet y soporte para Dark Mode      │
-│  - HeatmapLayer para visualización de clústeres viales          │
-│  - Algoritmo de Haversine: alertas de proximidad (< 30 metros) │
-│  - Exportación de telemetría a formato CSV para auditoría       │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│ Dispositivo IoT                             │
+│ ESP32 + HC-SR04 + PIR + indicadores LED     │
+│ Firmware C++ y conexión Wi-Fi               │
+└─────────────────────┬───────────────────────┘
+                      │ POST /api/sensores
+                      │ JSON sobre HTTP
+                      ▼
+┌─────────────────────────────────────────────┐
+│ API REST                                    │
+│ Node.js + Express + Mongoose                 │
+│ Autenticación JWT y persistencia en MongoDB │
+└─────────────────────┬───────────────────────┘
+                      │ Consulta periódica
+                      ▼
+┌─────────────────────────────────────────────┐
+│ Aplicación web                              │
+│ React + Leaflet + Chart.js                  │
+│ Mapa, alertas, estadísticas y exportación   │
+└─────────────────────────────────────────────┘
 ```
 
----
+### Flujo de un evento
 
-## 🎯 Objetivos
+1. El sensor PIR habilita la lectura del sensor ultrasónico.
+2. El firmware compara la distancia con el umbral configurado.
+3. Cuando identifica un evento, envía la lectura a la API y aplica un intervalo de cinco segundos para reducir registros consecutivos.
+4. Si el registro no contiene coordenadas, la aplicación web puede asociarle la ubicación obtenida desde el navegador.
+5. El mapa consulta los datos cada cuatro segundos y calcula la distancia al evento activo más cercano.
 
-### Objetivo General
-Diseñar e implementar una arquitectura IoT de extremo a extremo capaz de detectar baches en tiempo real, procesar la información en un servidor seguro y visualizar los riesgos geolocalizados en una interfaz interactiva.
+## Tecnologías
 
-### Objetivos Específicos
-1. **Sensorización Embebida**: Configurar el microcontrolador ESP32 con sensores HC-SR04 y PIR con lógica de eventos eficiente.
-2. **Backend Robusto**: Desarrollar una API RESTful en Node.js/Express con seguridad JWT y persistencia en MongoDB.
-3. **Visualización Geoespacial**: Construir un panel administrativo interactivo en React con mapas Leaflet y capas térmicas.
-4. **Seguridad Vial Preventiva**: Implementar algoritmo de distancia euclidiana/esférica (Haversine) para avisos en tiempo real al aproximarse a un bache.
+| Capa | Tecnologías |
+| --- | --- |
+| Dispositivo | ESP32, C++, HC-SR04, PIR, Wi-Fi y HTTP |
+| Backend | Node.js, Express 5, Mongoose, JWT y bcryptjs |
+| Base de datos | MongoDB local o MongoDB Atlas |
+| Frontend | React 19, React Router, Axios, Leaflet y Chart.js |
 
----
-
-## 🔌 Especificación de la API REST
-
-| Método | Endpoint | Descripción | Autenticación |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/health` | Comprobación de estado operativo del servidor | No |
-| `POST` | `/api/auth/register` | Registro de nuevos usuarios administradores | No |
-| `POST` | `/api/auth/login` | Autenticación y emisión de token JWT | No |
-| `GET` | `/api/sensores` | Lista de registros de telemetría y baches detectados | No |
-| `POST` | `/api/sensores` | Ingesta de telemetría enviada desde el microcontrolador ESP32 | No |
-| `DELETE` | `/api/sensores/:id` | Eliminación de registro de telemetría | Sí (JWT) |
-
----
-
-## 📂 Estructura del Repositorio
+## Estructura del repositorio
 
 ```text
 Bachito/
 ├── BachitoIno/
-│   └── BachitoIno.ino        # Firmware en C++ (lectura ultrasónica, filtro y WiFi)
+│   └── BachitoIno.ino         # Firmware del ESP32
 ├── backend/
 │   ├── src/
-│   │   ├── config/           # Conexión a base de datos MongoDB
-│   │   ├── controllers/      # Controladores de negocio (sensores, usuarios)
-│   │   ├── middleware/       # Verificación de tokens JWT
-│   │   ├── models/           # Esquemas Mongoose (SensorData, User)
-│   │   ├── routes/           # Enrutamiento de endpoints
-│   │   └── app.js            # Configuración de Express, CORS y middlewares
-│   ├── package.json          # Dependencias y scripts del backend
-│   └── server.js             # Punto de entrada del servidor Node.js
+│   │   ├── config/            # Conexión con MongoDB
+│   │   ├── controllers/       # Procesamiento de telemetría
+│   │   ├── middleware/        # Verificación de tokens JWT
+│   │   ├── models/            # Modelos de Mongoose
+│   │   ├── routes/            # Rutas de autenticación y sensores
+│   │   └── app.js             # Configuración de Express
+│   ├── package.json
+│   └── server.js              # Punto de entrada del servidor
 ├── frontend/
-│   ├── public/               # Metadatos e iconos de la aplicación web
+│   ├── public/
 │   ├── src/
-│   │   ├── components/       # Barra de navegación y componentes reutilizables
-│   │   ├── pages/            # Vistas (Mapa interactivo, Login, Registro, Admin)
-│   │   ├── utils/            # Cálculo geográfico Haversine (gpsHelpers.js)
-│   │   └── App.js            # Router principal y estados globales
-│   └── package.json          # Dependencias y scripts de React
-└── README.md                 # Documentación técnica general
+│   │   ├── components/        # Navegación y componentes compartidos
+│   │   ├── pages/             # Mapa, configuración y administración
+│   │   ├── utils/             # Cálculo de distancia con Haversine
+│   │   ├── App.js             # Rutas y estado global
+│   │   └── config.js          # URL base de la API
+│   └── package.json
+└── README.md
 ```
 
----
+## Requisitos
 
-## ⚙️ Requisitos e Instalación
+- Node.js 18 o superior.
+- Una instancia local de MongoDB o un clúster de MongoDB Atlas.
+- Arduino IDE o PlatformIO con soporte para placas ESP32.
+- Una placa ESP32, un sensor ultrasónico HC-SR04, un sensor PIR y los componentes electrónicos del montaje.
 
-### Prerrequisitos
-* **Node.js**: v18.0 o superior
-* **MongoDB**: Instancia local o cluster en MongoDB Atlas
-* **Arduino IDE** o PlatformIO (con paquete de placas ESP32 instalado)
+## Instalación
 
 ### 1. Clonar el repositorio
+
 ```bash
 git clone https://github.com/aledash3/Bachito.git
 cd Bachito
 ```
 
-### 2. Iniciar el Backend (Servidor API)
+### 2. Configurar el backend
+
+Instala las dependencias desde el archivo de bloqueo:
+
 ```bash
 cd backend
-npm install
-copy .env.example .env   # En Linux/macOS: cp .env.example .env
-# Configura MONGO_URI y JWT_SECRET en el archivo .env
-npm start                # Para desarrollo con recarga: npm run dev
+npm ci
 ```
-> La API quedará disponible en `http://localhost:4000`. Comprobación: `http://localhost:4000/api/health`.
 
-### 3. Iniciar el Frontend (Dashboard Web)
-En otra terminal:
+Crea `backend/.env` con una configuración equivalente a la siguiente:
+
+```dotenv
+MONGO_URI=mongodb://127.0.0.1:27017/bachito
+JWT_SECRET=reemplaza_este_valor_por_una_clave_segura
+PORT=4000
+```
+
+Inicia la API:
+
 ```bash
-cd frontend
-npm install
-copy .env.example .env   # En Linux/macOS: cp .env.example .env
 npm start
 ```
-> La aplicación React se abrirá automáticamente en `http://localhost:3000`.
 
-### 4. Configuración del Firmware ESP32
-1. Abrir `BachitoIno/BachitoIno.ino` en Arduino IDE.
-2. Definir las credenciales de red Wi-Fi (`ssid` y `password`).
-3. Especificar la dirección del backend en `serverUrl` (ej. `http://192.168.1.50:4000/api/sensores`).
-4. Compilar y cargar el firmware en la placa ESP32.
+La comprobación de estado estará disponible en `http://localhost:4000/api/health`.
 
----
+### 3. Configurar el frontend
 
-## 🔬 Conclusiones Principales
+En otra terminal:
 
-1. **Desacoplamiento Efectivo**: La división en tres capas (Firmware, API y SPA) permitió total independencia tecnológica entre la sensorización embebida y el panel de visualización.
-2. **Eficiencia en el Borde**: La lógica orientada a eventos en el firmware C++ incorpora un intervalo entre eventos para limitar la frecuencia de envío; su efecto sobre el tráfico requiere medición.
-3. **Procesamiento Distribuido**: Delegar los cálculos de proximidad (Haversine) y el renderizado geoespacial al cliente React optimizó los recursos de cómputo del backend.
+```bash
+cd frontend
+npm ci
+```
 
----
+Para las vistas que utilizan la configuración centralizada, puedes definir la API en `frontend/.env`:
 
-## 👨‍💻 Autores
+```dotenv
+REACT_APP_API_URL=http://localhost:4000/api
+```
 
-Este proyecto fue desarrollado de forma colaborativa por:
+Después inicia la aplicación:
 
-* **David Alejandro Cruz Palacios** — [@aledash3](https://github.com/aledash3)
-* **Emily Mabel Ortega Constante** — [@BOOTEABLE](https://github.com/BOOTEABLE)
-* **Carlos José Pilatuña Roldan** — [@Katsuro03](https://github.com/Katsuro03)
+```bash
+npm start
+```
 
-Carrera de Ingeniería en Ciencias de la Computación  
-Asignaturas: **Programación y Plataformas Web** & **Sistemas Embebidos** (5to Semestre)  
-**Universidad Politécnica Salesiana (UPS)**  
-Quito, Ecuador
+El frontend estará disponible en `http://localhost:3000`.
 
----
+> La vista principal del mapa conserva actualmente la URL del despliegue de demostración en su código. Para una ejecución completamente local, actualiza `urlBackend` en `frontend/src/pages/MapaPage.js`. Esta configuración está registrada como una limitación pendiente de centralización.
 
-## 📜 Licencia
+### 4. Configurar el firmware
 
-Este proyecto fue desarrollado exclusivamente con fines académicos, educativos y de divulgación científica en la **Universidad Politécnica Salesiana (UPS)**.
+1. Abre `BachitoIno/BachitoIno.ino` en Arduino IDE o PlatformIO.
+2. Define `ssid` y `password` con las credenciales de la red Wi-Fi.
+3. Cambia `serverUrl` por la dirección de la API, por ejemplo `http://192.168.1.50:4000/api/sensores`.
+4. Verifica los pines y el umbral de detección según el montaje físico.
+5. Compila y carga el firmware en el ESP32.
 
-Todos los derechos reservados conforme a las normativas de desarrollo académico e institucional. Prohibido su uso comercial no autorizado.
+## API REST
+
+| Método | Ruta | Descripción | Autorización en el backend |
+| --- | --- | --- | --- |
+| `GET` | `/api/health` | Comprueba el estado de la API | Pública |
+| `POST` | `/api/auth/register` | Registra un usuario | Pública |
+| `POST` | `/api/auth/login` | Inicia sesión y emite un token JWT | Pública |
+| `GET` | `/api/sensores` | Consulta los registros de telemetría | Pública |
+| `POST` | `/api/sensores` | Registra telemetría del dispositivo | Pública |
+| `PATCH` | `/api/sensores/:id` | Actualiza coordenadas o estado | Pública actualmente |
+| `DELETE` | `/api/sensores/:id` | Elimina un registro | Pública actualmente |
+
+Ejemplo de telemetría enviada por el dispositivo:
+
+```json
+{
+  "deviceId": "ESP32-01",
+  "movimiento": true,
+  "distancia": 63.4,
+  "bache": true
+}
+```
+
+## Limitaciones conocidas
+
+- Las rutas de telemetría todavía no aplican el middleware JWT en el backend. Las restricciones del panel administrativo existen en el cliente, pero no sustituyen la autorización del servidor.
+- El registro permite solicitar el rol de administrador desde una ruta pública; este flujo debe restringirse antes de un despliegue productivo.
+- La vista del mapa utiliza directamente la URL del despliegue de demostración en lugar de la configuración centralizada.
+- La geolocalización se obtiene desde el navegador y puede asociarse al evento más reciente que todavía no tenga coordenadas.
+- La API aplica validaciones básicas y requiere controles adicionales de esquema, rangos, tasa de solicitudes y origen antes de exponerse a producción.
+- El prototipo utiliza consultas periódicas cada cuatro segundos y no una conexión en tiempo real mediante WebSocket.
+
+## Autoría y contribuciones
+
+El proyecto fue desarrollado de forma colaborativa por:
+
+- **David Alejandro Cruz Palacios** — [@aledash3](https://github.com/aledash3)
+- **Emily Mabel Ortega Constante** — [@BOOTEABLE](https://github.com/BOOTEABLE)
+- **Carlos José Pilatuña Roldan** — [@Katsuro03](https://github.com/Katsuro03)
+
+La contribución de David Alejandro Cruz Palacios se concentró en el prototipado del circuito electrónico y el desarrollo del firmware C++ para el ESP32 encargado de capturar y enviar telemetría. Este repositorio conserva los créditos del equipo original.
+
+- **Carrera:** Ingeniería en Ciencias de la Computación.
+- **Asignaturas:** Programación y Plataformas Web; Sistemas Embebidos, quinto semestre.
+- **Institución:** Universidad Politécnica Salesiana.
+- **Ubicación:** Quito, Ecuador.
+
+## Uso y licencia
+
+Este proyecto fue desarrollado con fines académicos, educativos y de divulgación científica. El repositorio no incluye actualmente un archivo de licencia general para su reutilización o distribución; cualquier uso fuera de su finalidad académica debe consultarse con sus autores.
