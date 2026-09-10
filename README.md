@@ -2,11 +2,15 @@
 
 Prototipo IoT para detectar irregularidades en la vía, registrar telemetría y visualizar eventos georreferenciados en una aplicación web.
 
-[![ESP32](https://img.shields.io/badge/ESP32-Espressif-000000?style=flat-square&logo=espressif)](https://www.espressif.com/)
-[![C++](https://img.shields.io/badge/C%2B%2B-Firmware-00599C?style=flat-square&logo=c%2B%2B)](https://isocpp.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-43853D?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-4EA94B?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![React](https://img.shields.io/badge/React-19-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-5.x-404D59?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas%20%2F%20Mongoose-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![React](https://img.shields.io/badge/React-19.x-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Leaflet](https://img.shields.io/badge/Leaflet-Geoespacial-199900?style=for-the-badge&logo=Leaflet&logoColor=white)](https://leafletjs.com/)
+[![C++](https://img.shields.io/badge/C++-ESP32%20Firmware-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
+[![ESP32](https://img.shields.io/badge/ESP32-Espressif-000000?style=for-the-badge&logo=espressif&logoColor=white)](https://www.espressif.com/)
+![Licencia](https://img.shields.io/badge/Licencia-Acad%C3%A9mica%20y%20Educativa-blue?style=for-the-badge)
 
 ## Descripción
 
@@ -207,21 +211,25 @@ Ejemplo de telemetría enviada por el dispositivo:
 - La API aplica validaciones básicas y requiere controles adicionales de esquema, rangos, tasa de solicitudes y origen antes de exponerse a producción.
 - El prototipo utiliza consultas periódicas cada cuatro segundos y no una conexión en tiempo real mediante WebSocket.
 
-## Autoría y contribuciones
+## 👨‍💻 Autores
 
 El proyecto fue desarrollado de forma colaborativa por:
 
-- **David Alejandro Cruz Palacios** — [@aledash3](https://github.com/aledash3)
-- **Emily Mabel Ortega Constante** — [@BOOTEABLE](https://github.com/BOOTEABLE)
-- **Carlos José Pilatuña Roldan** — [@Katsuro03](https://github.com/Katsuro03)
+* **David Alejandro Cruz Palacios** — [@aledash3](https://github.com/aledash3)
+* **Emily Mabel Ortega Constante** — [@BOOTEABLE](https://github.com/BOOTEABLE)
+* **Carlos José Pilatuña Roldan** — [@Katsuro03](https://github.com/Katsuro03)
+
+Carrera de Ingeniería en Ciencias de la Computación  
+Asignaturas: **Programación y Plataformas Web** & **Sistemas Embebidos** (5to Semestre)  
+**Universidad Politécnica Salesiana (UPS)**  
+Quito, Ecuador
+
+## Contribución de David Cruz
 
 La contribución de David Alejandro Cruz Palacios se concentró en el prototipado del circuito electrónico y el desarrollo del firmware C++ para el ESP32 encargado de capturar y enviar telemetría. Este repositorio conserva los créditos del equipo original.
 
-- **Carrera:** Ingeniería en Ciencias de la Computación.
-- **Asignaturas:** Programación y Plataformas Web; Sistemas Embebidos, quinto semestre.
-- **Institución:** Universidad Politécnica Salesiana.
-- **Ubicación:** Quito, Ecuador.
+## 📜 Licencia
 
-## Uso y licencia
+Este proyecto fue desarrollado exclusivamente con fines académicos, educativos y de divulgación científica en la **Universidad Politécnica Salesiana (UPS)**.
 
-Este proyecto fue desarrollado con fines académicos, educativos y de divulgación científica. El repositorio no incluye actualmente un archivo de licencia general para su reutilización o distribución; cualquier uso fuera de su finalidad académica debe consultarse con sus autores.
+Todos los derechos reservados conforme a las normativas de desarrollo académico e institucional. Prohibido su uso comercial no autorizado.
